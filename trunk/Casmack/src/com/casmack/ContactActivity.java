@@ -1,5 +1,6 @@
 package com.casmack;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -149,8 +150,11 @@ public class ContactActivity extends ListActivity  {
     
     
     
-    class Account {
-    	private String name;
+    class Account implements Serializable {
+    	
+		private static final long serialVersionUID = 1L;
+		
+		private String name;
 		private String user;
 		private String status = "";
     	private Mode mode;

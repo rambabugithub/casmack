@@ -1,8 +1,5 @@
 package com.casmack;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.filter.MessageTypeFilter;
 import org.jivesoftware.smack.filter.PacketFilter;
@@ -15,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -24,13 +22,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.casmack.model.ChatMessage;
+
 
 
 public class ChatActivity extends Activity {
 
-	private List<Message> m_discussionThread;
-	private ArrayAdapter<Message> m_discussionThreadAdapter;
+	private ChatMessageList m_discussionThread;
+	private ArrayAdapter<ChatMessage> m_discussionThreadAdapter;
 	private Handler m_handler;
+	
+	private static final String MESSAGES = "messages";
 	
     /** Called when the activity is first created. */
     @Override
@@ -48,7 +50,13 @@ public class ChatActivity extends Activity {
 		final EditText message = (EditText) this.findViewById(R.id.embedded_text_editor);		
 		ListView list = (ListView) this.findViewById(R.id.thread);
 		
-		m_discussionThread = new ArrayList<Message>();
+		
+		m_discussionThread = (ChatMessageList) (savedInstanceState != null ? savedInstanceState.getParcelable(MESSAGES) : null);
+		if ( m_discussionThread == null ) {
+			m_discussionThread = new ChatMessageList();	
+		}
+		
+		
 		m_discussionThreadAdapter = new MessageAdapter(this, R.layout.multi_line_list_item, m_discussionThread);
 		list.setAdapter(m_discussionThreadAdapter);
 		
@@ -62,7 +70,8 @@ public class ChatActivity extends Activity {
 				Message msg = new Message(to, Message.Type.chat);
 				msg.setBody(text);
 				ConnectionActivity.m_connection.sendPacket(msg);
-				m_discussionThread.add(msg);
+				ChatMessage chatMessage = new ChatMessage(msg);
+				m_discussionThread.getMessages().add(chatMessage);
 				m_discussionThreadAdapter.notifyDataSetChanged();
 			}
 		});
@@ -73,8 +82,8 @@ public class ChatActivity extends Activity {
 				public void processPacket(Packet packet) {
 					Message message = (Message) packet;
 					if (message.getBody() != null) {
-						
-						m_discussionThread.add(message);
+						ChatMessage chatMessage = new ChatMessage(message);
+						m_discussionThread.getMessages().add(chatMessage);
 						
 						m_handler.post(new Runnable() {
 							public void run() {
@@ -85,13 +94,32 @@ public class ChatActivity extends Activity {
 				}
 			}, filter);
 	}
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(MESSAGES, m_discussionThread);
+        super.onSaveInstanceState(outState);
+    }
+    
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+      super.onRestoreInstanceState(savedInstanceState);
+      m_discussionThread = savedInstanceState.getParcelable(MESSAGES);
+    }
+    
+    @Override
+    protected void onNewIntent(Intent intent) {
+    	super.onNewIntent(intent);
+    	Log.i("gnou", intent.toString());
+    }
+
 	
-	class MessageAdapter extends ArrayAdapter<Message> {
+	class MessageAdapter extends ArrayAdapter<ChatMessage> {
 		
 		Context context;
 		
-		MessageAdapter(Context context, int resource, List<Message> objects) {
-			super(context, resource, objects);
+		MessageAdapter(Context context, int resource, ChatMessageList objects) {
+			super(context, resource, objects.getMessages());
 			this.context=context;
 		}
 
@@ -100,8 +128,8 @@ public class ChatActivity extends Activity {
 		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View row = View.inflate(context, R.layout.multi_line_list_item, null);
-			if ( position < m_discussionThread.size() ) {
-				Message mess = m_discussionThread.get(position);
+			if ( position < m_discussionThread.getMessages().size() ) {
+				ChatMessage mess = m_discussionThread.getMessages().get(position);
 				TextView message=(TextView)row.findViewById(R.id.message);
 				message.setText(mess.getBody());
 				
@@ -125,6 +153,10 @@ public class ChatActivity extends Activity {
 		}
 	}
 
+	
+	
+	
+	
 
 
 }
