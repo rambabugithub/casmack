@@ -10,8 +10,6 @@ import com.casmack.model.ChatMessage;
 
 public class ChatMessageList  implements Parcelable{
 
-		private static final long serialVersionUID = 5443812057317476312L;
-
 		private ArrayList<ChatMessage> messages = new ArrayList<ChatMessage>();
 
 		public ChatMessageList(){
