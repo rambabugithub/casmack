@@ -22,7 +22,10 @@
                   android:launchMode="singleTop">
         </activity>
 
+		<service android:name="XmppConnectionService" />
+		
     </application>
+    
     <uses-sdk android:minSdkVersion="3" />
     <uses-permission android:name="android.permission.INTERNET" />
 
