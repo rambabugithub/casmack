@@ -2,8 +2,6 @@ package com.casmack.model;
 
 import java.io.Serializable;
 
-import org.jivesoftware.smack.packet.Message;
-
 public class ChatMessage implements Serializable {
 		
 		private static final long serialVersionUID = -3359911823393072186L;
@@ -11,12 +9,12 @@ public class ChatMessage implements Serializable {
 		private String from;
 		private String body; 
 		
-		public ChatMessage(Message message) {
-			from = message.getFrom();
-			body = message.getBody();
+		public ChatMessage() {
 		}
 		
-		public ChatMessage() {
+		public ChatMessage(String from, String body) {
+			this.from = from;
+			this.body = body;
 		}
 		
 		public String getFrom() {

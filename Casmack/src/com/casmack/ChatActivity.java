@@ -8,10 +8,13 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.util.StringUtils;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +29,9 @@ import com.casmack.model.ChatMessage;
 
 
 
-public class ChatActivity extends Activity {
+public class ChatActivity extends Activity implements ServiceConnection {
+	
+	private static final String TAG = "ChatActivity";
 
 	private ChatMessageList m_discussionThread;
 	private ArrayAdapter<ChatMessage> m_discussionThreadAdapter;
@@ -38,6 +43,10 @@ public class ChatActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        Intent connectionService = new Intent(this,XmppConnectionService.class); 
+        bindService(connectionService,this, Context.BIND_AUTO_CREATE);
+        
         setContentView(R.layout.chat);
         
         Intent intent = getIntent();
@@ -66,33 +75,15 @@ public class ChatActivity extends Activity {
 			public void onClick(View view) {
 				String to = recipient.getText().toString();
 				String text = message.getText().toString();
-		
-				Message msg = new Message(to, Message.Type.chat);
-				msg.setBody(text);
-				ConnectionActivity.m_connection.sendPacket(msg);
-				ChatMessage chatMessage = new ChatMessage(msg);
+				xmppService.sendMessage(text, to);
+				ChatMessage chatMessage = new ChatMessage(to, text);
 				m_discussionThread.getMessages().add(chatMessage);
 				m_discussionThreadAdapter.notifyDataSetChanged();
 			}
 		});
 		
 		
-		PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
-		ConnectionActivity.m_connection.addPacketListener(new PacketListener() {
-				public void processPacket(Packet packet) {
-					Message message = (Message) packet;
-					if (message.getBody() != null) {
-						ChatMessage chatMessage = new ChatMessage(message);
-						m_discussionThread.getMessages().add(chatMessage);
-						
-						m_handler.post(new Runnable() {
-							public void run() {
-								m_discussionThreadAdapter.notifyDataSetChanged();
-							}
-						});
-					}
-				}
-			}, filter);
+
 	}
     
     @Override
@@ -110,7 +101,7 @@ public class ChatActivity extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
     	super.onNewIntent(intent);
-    	Log.i("gnou", intent.toString());
+    	Log.i(TAG, intent.toString());
     }
 
 	
@@ -151,6 +142,37 @@ public class ChatActivity extends Activity {
 
 			return(row);
 		}
+	}
+
+
+	private IXmppConnectionService xmppService;
+	
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		Log.i(TAG, "Connected!"); 
+        xmppService = ((XmppConnectionServiceBinder)service).getService(); 
+		
+		PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
+		xmppService.getConnection().addPacketListener(new PacketListener() {
+				public void processPacket(Packet packet) {
+					Message message = (Message) packet;
+					if (message.getBody() != null) {
+						ChatMessage chatMessage = new ChatMessage(message.getFrom(), message.getBody());
+						m_discussionThread.getMessages().add(chatMessage);
+						
+						m_handler.post(new Runnable() {
+							public void run() {
+								m_discussionThreadAdapter.notifyDataSetChanged();
+							}
+						});
+					}
+				}
+			}, filter);
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
+		Log.i(TAG, "DisConnected!"); 
 	}
 
 	
