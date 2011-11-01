@@ -12,4 +12,5 @@
     <string name="chat">Discussion</string>
     <string name="contact">Contact List</string>
     <string name="destination">Destination</string>
+    <string name="connection_in_progress">Connection in progress</string>
 </resources>

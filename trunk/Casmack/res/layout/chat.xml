@@ -9,20 +9,26 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" 
 		android:text="@string/destination"/>
-	<EditText 
+	<TextView 
 		android:id="@+id/recipient" 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:singleLine="true"
 		android:autoText="false" android:capitalize="none"
 		android:scrollHorizontally="true" 
 		android:text="" />
-	<ListView android:id="@+id/thread" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:layout_weight="1"
-		android:scrollbars="horizontal" 
-		android:clickable="false"
-		android:longClickable="false"
-		android:focusable="false"/>
-		
+	<ScrollView 
+	    android:fillViewport="true"
+		android:id="@+id/scroll" 
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="1">
+		<ListView android:id="@+id/thread" 
+		    android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:clickable="true"
+			android:longClickable="false"
+			android:focusable="true"/>
+	</ScrollView>	
 	<LinearLayout
            android:id="@+id/bottom_panel"
            android:orientation="horizontal"
@@ -51,26 +57,13 @@
                    android:nextFocusRight="@+id/send_button"
                    android:hint="@string/type_to_compose_text_enter_to_send"
                    android:maxLines="4"
+                   android:layout_weight="1" 
                    android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
                    android:imeOptions="actionSend|flagNoEnterAction"
                    android:background="@null"
                    android:maxLength="1000"
                />
 
-               <TextView
-                   android:id="@+id/text_counter"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:background="#88000000"
-                   android:textColor="#ffffffff"
-                   android:textSize="11sp"
-                   android:textStyle="bold"
-                   android:paddingLeft="3dip"
-                   android:paddingRight="3dip"
-                   android:layout_alignParentRight="true"
-                   android:layout_alignParentTop="true"
-                   android:visibility="gone"
-               />
            </RelativeLayout>
 
            <Button android:id="@+id/send_button"

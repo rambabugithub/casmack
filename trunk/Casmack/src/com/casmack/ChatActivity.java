@@ -54,7 +54,7 @@ public class ChatActivity extends Activity implements ServiceConnection {
         
         m_handler = new Handler();
         
-        final EditText recipient = (EditText) this.findViewById(R.id.recipient);
+        final TextView recipient = (TextView) this.findViewById(R.id.recipient);
 		recipient.setText(bundleUser);
 		final EditText message = (EditText) this.findViewById(R.id.embedded_text_editor);		
 		ListView list = (ListView) this.findViewById(R.id.thread);

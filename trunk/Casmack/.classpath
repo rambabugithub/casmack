@@ -5,5 +5,5 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="libs/asmack-android-1.1-2010.01.06.jar" sourcepath="/home/elendrim/sources/asmack-android-1.1-2010.01.06-source.zip"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
