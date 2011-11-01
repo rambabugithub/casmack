@@ -11,4 +11,5 @@
     <string name="password">Mot de passe</string>
     <string name="chat">Discution</string>
     <string name="contact">Liste de contact</string>
+    <string name="connection_in_progress">Connexion en cours</string>
 </resources>
