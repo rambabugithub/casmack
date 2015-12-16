@@ -1,0 +1,1 @@
+Xmpp client for android based on the asmack ( http://code.google.com/p/asmack/ )  library.
